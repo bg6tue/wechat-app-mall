@@ -1,6 +1,7 @@
 const app = getApp()
 const WXAPI = require('apifm-wxapi')
 const AUTH = require('../../utils/auth')
+const wxpay = require('../../utils/pay.js')
 
 Page({
   data: {
@@ -20,6 +21,7 @@ Page({
     coupons: [],
     youhuijine: 0, //优惠券金额
     curCoupon: null, // 当前选择使用的优惠券
+    curCouponShowText: '请选择使用优惠券', // 当前选择使用的优惠券
     allowSelfCollection: '0', // 是否允许到店自提
     peisongType: 'kd', // 配送方式 kd,zq 分别表示快递/到店自取
     remark: ''
@@ -113,7 +115,8 @@ Page({
       token: loginToken,
       goodsJsonStr: that.data.goodsJsonStr,
       remark: remark,
-      peisongType: that.data.peisongType
+      peisongType: that.data.peisongType,
+      isCanHx: true
     };
     if (that.data.kjId) {
       postData.kjid = that.data.kjId
@@ -174,11 +177,30 @@ Page({
         that.getMyCoupons();
         return;
       }
-      // 下单成功，跳转到订单管理界面
+      that.processAfterCreateOrder(res)
+    })
+  },
+  async processAfterCreateOrder(res) {
+    // 直接弹出支付，取消支付的话，去订单列表
+    const res1 = await WXAPI.userAmount(wx.getStorageSync('token'))
+    if (res1.code != 0) {
+      wx.showToast({
+        title: '无法获取用户资金信息',
+        icon: 'none'
+      })
       wx.redirectTo({
         url: "/pages/order-list/index"
       });
-    })
+      return
+    }
+    const money = res.data.amountReal * 1 - res1.data.balance*1
+    if (money <= 0) {
+      wx.redirectTo({
+        url: "/pages/order-list/index"
+      })
+    } else {
+      wxpay.wxpay('order', money, res.data.id, "/pages/order-list/index");
+    }
   },
   async initShippingAddress() {
     const res = await WXAPI.defaultAddress(wx.getStorageSync('token'))
@@ -245,38 +267,32 @@ Page({
       url: "/pages/select-address/index"
     })
   },
-  getMyCoupons: function () {
-    var that = this;
-    WXAPI.myCoupons({
+  async getMyCoupons() {
+    const res = await WXAPI.myCoupons({
       token: wx.getStorageSync('token'),
       status: 0
-    }).then(function (res) {
-      if (res.code == 0) {
-        var coupons = res.data.filter(entity => {
-          return entity.moneyHreshold <= that.data.allGoodsAndYunPrice;
-        });
-        if (coupons.length > 0) {
-          that.setData({
-            hasNoCoupons: false,
-            coupons: coupons
-          });
-        }
-      }
     })
+    if (res.code == 0) {
+      var coupons = res.data.filter(entity => {
+        return entity.moneyHreshold <= this.data.allGoodsAndYunPrice;
+      })
+      if (coupons.length > 0) {
+        coupons.forEach(ele => {
+          ele.nameExt = ele.name + ' [满' + ele.moneyHreshold + '元可减' + ele.money + '元]'
+        })
+        this.setData({
+          hasNoCoupons: false,
+          coupons: coupons
+        });
+      }
+    }
   },
   bindChangeCoupon: function (e) {
-    const selIndex = e.detail.value[0] - 1;
-    if (selIndex == -1) {
-      this.setData({
-        youhuijine: 0,
-        curCoupon: null
-      });
-      return;
-    }
-    //console.log("selIndex:" + selIndex);
+    const selIndex = e.detail.value;
     this.setData({
       youhuijine: this.data.coupons[selIndex].money,
-      curCoupon: this.data.coupons[selIndex]
+      curCoupon: this.data.coupons[selIndex],
+      curCouponShowText: this.data.coupons[selIndex].nameExt
     });
   },
   radioChange (e) {

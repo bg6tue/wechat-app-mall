@@ -1,4 +1,3 @@
-@import "/template/share/index.wxss";
 @import "/template/login/index.wxss";
 
 .container {
@@ -32,6 +31,34 @@ swiper-item image {
   position: absolute;
   right: 35rpx;
   bottom: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 130rpx;
+}
+.goods-info-fx .item {
+  width: 50rpx;
+  height: 50rpx;
+  right: 130rpx;
+  top: 100rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  background: #fff;
+  z-index: 20;
+} 
+.goods-info-fx .item image {
+  width: 50rpx;
+  height: 50rpx;
+}
+.goods-info-fx .item button {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  z-index: 99;
 }
 .goods-info .goods-title{
   box-sizing: border-box;
@@ -116,15 +143,16 @@ swiper-item image {
   bottom: 0;
   left: 0;
   display: flex;
-  box-shadow:0 0 8rpx 0 ;
+  box-shadow:0 0 1rpx 0 ;
+  align-items: center;
 }
 .footer-box .contact {
   position: relative;
-  width: 120rpx;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-left: 32rpx;
 }
 .footer-box .contact button {
   position: absolute;
@@ -139,20 +167,26 @@ swiper-item image {
 }
 .footer-box .shop-cart-btn {
   position: relative;
-  width: 135rpx;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-left: 32rpx;
 }
 .footer-box .shop-cart-btn image {
   width: 55rpx;
   height: 55rpx;
 }
+.fav-icon {
+  width: 60rpx;
+  height: 60rpx;
+  margin-left: 32rpx;
+  /*707070*/
+}
 .footer-box .shop-cart-btn .shop-num{
   position: absolute;
   color:#fff;
-  left: 80rpx;
+  left: 32rpx;
   top:10rpx;
 
   width: 40rpx;
@@ -165,12 +199,13 @@ swiper-item image {
 }
 .footer-box .join-shop-cart{
   text-align: center;
-  width: 250rpx;
   height: 100%;
   line-height: 100rpx;
   background-color: #ff6850;
   color:#fff;
   font-size: 34rpx;
+  flex: 1;
+  margin-left: 32rpx;
 }
 .footer-box .now-buy{
   text-align: center;
@@ -180,6 +215,7 @@ swiper-item image {
   background-color: #e64340;
   color:#fff;
   font-size: 34rpx;
+  flex: 1;
 }
 .show-popup{
   position: fixed;
@@ -233,10 +269,19 @@ swiper-item image {
   font-size:26rpx;
   color:#000000;
 }
-.pop-goods-price{
+.pop-goods-price {
   font-size:26rpx;
   color:#e64340;
   margin-top:20rpx; 
+}
+.pop-goods-price .t1 {
+  font-size:50rpx;
+}
+.pop-goods-price-original{
+  font-size:26rpx;
+  color: #aaa;
+  text-decoration: line-through;
+  margin-left: 16rpx;
 }
 .pop-goods-close{
   width: 36rpx;
@@ -380,4 +425,28 @@ swiper-item image {
   width:300rpx;
   height:300rpx;
   margin-top: 50rpx;
+}
+
+
+
+.posterImg-box {
+  position: absolute;
+  top: 64rpx;
+  left: 32rpx;
+  width: 686rpx;
+  margin-bottom: 100rpx;
+  z-index: 999999;
+}
+.posterImg {  
+  width: 100%;
+}
+.btn-create {
+  margin: 32rpx;
+  margin-bottom: 0;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: #e64340;
+  color: #fff;
+  text-align: center;
+  border-radius: 8rpx;
 }

@@ -1,8 +1,7 @@
-<import src="/template/share/index.wxml" />
 <import src="/template/login/index.wxml" />
 <view class="container">
   <view class="swiper-container">
-    <swiper class="swiper_box" indicator-dots="true" indicator-active-color="#fff" autoplay circular>
+    <swiper class="swiper_box" indicator-dots="true" indicator-active-color="#fff" autoplay="{{!goodsDetail.basicInfo.videoId}}" circular>
       <swiper-item wx:if="{{goodsDetail.basicInfo.videoId}}">
         <video src="{{videoMp4Src}}" autoplay="true" loop="true" style='width:100%;height:100%;'></video>
       </swiper-item>
@@ -17,10 +16,17 @@
     <view class="goods-share" wx:if="{{goodsDetail.basicInfo.commissionType == 2}}">分享有赏，好友下单后可得 {{goodsDetail.basicInfo.commission}}元 现金奖励</view>
     <view class="goods-profile">
       <view class="p"><text>¥</text> {{selectSizePrice}}</view>
+      <view wx:if="{{goodsDetail.basicInfo.originalPrice && goodsDetail.basicInfo.originalPrice > 0}}" class="goods-price" style='color:#aaa;text-decoration:line-through;padding: 15rpx 0rpx 0rpx 15rpx;'><text>¥</text> {{selectSizeOPrice}}</view>
       <view class="r">{{goodsDetail.basicInfo.numberSells}}人已买</view>
     </view>
     <view class="goods-info-fx">
-      <template is="apifmShare" />
+      <view class='item'>
+        <image src='/images/share/share1.png'></image>
+        <button open-type='share'></button>
+      </view>
+      <view class='item' bindtap="drawSharePic">
+        <image src='/images/share/share2.png'></image>
+      </view>
     </view>    
   </view>
   <view class="page__bd" wx:if="{{curGoodsKanjia}}" style='width:750rpx;'>
@@ -215,6 +221,7 @@
       <view class="shop-num">{{shopNum}}</view>
       <image src="/images/nav/cart-off.png"></image>
     </view>
+    <image bindtap="addFav" class="fav-icon" src="/images/icon/fav{{faved?'1':'0'}}.svg"></image>
     <view wx:if="{{!goodsDetail.basicInfo.pingtuan}}" class="join-shop-cart" bindtap="{{goodsDetailSkuShowType==0?'toAddShopCar':'addShopCar'}}">加入购物车</view>
     <view wx:if="{{!goodsDetail.basicInfo.pingtuan}}" class="now-buy"  data-shopType="{{shopType}}" bindtap="{{goodsDetailSkuShowType==0?'tobuy':'buyNow'}}">立即购买</view>
     <view wx:if="{{goodsDetail.basicInfo.pingtuan}}" class="join-shop-cart" bindtap="tobuy">单独购买</view>
@@ -229,7 +236,10 @@
         </view>
         <view class="pop-goods-des">
           <view class="pop-goods-title">{{goodsDetail.basicInfo.name}}</view>
-          <view class="pop-goods-price">¥ {{selectSizePrice}}</view>
+          <view class="pop-goods-price">
+            ¥ <text class="t1">{{selectSizePrice}}</text>
+            <text wx:if="{{goodsDetail.basicInfo.originalPrice && goodsDetail.basicInfo.originalPrice > 0}}" class="pop-goods-price-original"><text>¥</text> {{selectSizeOPrice}}</text>
+          </view>
         </view>
         <image class="pop-goods-close" src="/images/icon/close0.svg" bindtap="closePopupTap"></image>
       </view>
@@ -277,3 +287,11 @@
 
 <template is="apifmLogin" data="{{wxlogin: wxlogin}}" />
 <!-- <float-menu />  -->
+
+
+<poster id="poster" config="{{posterConfig}}" bind:success="onPosterSuccess" bind:fail="onPosterFail"></poster>
+<view wx:if="{{showposterImg}}" class="popup-mask"></view>
+<view wx:if="{{showposterImg}}" class="posterImg-box">
+  <image mode="widthFix" class="posterImg" src="{{posterImg}}"></image>
+  <view class="btn-create" bindtap="savePosterPic">保存到相册</view>
+</view>
